@@ -1,0 +1,12 @@
+{
+  "@@locale": "en",
+  "appTitle": "Dashboard",
+  "add": "Add",
+  "details": "Details",
+  "address": "Address",
+  "village": "Village",
+  "waterMeterID": "Water Meter ID",
+  "totalToday": "Total Today",
+  "changeLanguage": "Change Language",
+  "selectLanguage": "Select Language"
+}
