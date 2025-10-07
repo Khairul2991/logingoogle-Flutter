@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'login_page.dart';
+import 'package:logingoogle/settings/language_dropdown.dart';
+import '../l10n/app_localizations.dart';
+import '../login_page.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+
+import 'chart_page.dart';
 
 
 class Dashboard extends StatefulWidget {
@@ -12,6 +16,8 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  final AppLocalizations _appLocalizations = AppLocalizations();
+
   // Contoh data yang nanti bisa diganti dengan data dinamis lain
   List<Map<String, dynamic>> waterMeterData = [
     {
@@ -34,6 +40,17 @@ class _DashboardState extends State<Dashboard> {
     },
   ];
 
+  @override
+  void initState() {
+    super.initState();
+    // Daftarkan callback untuk refresh UI ketika bahasa berubah
+    _appLocalizations.onLanguageChanged = _refreshOnLanguageChange;
+  }
+
+  void _refreshOnLanguageChange() {
+    setState(() {});
+  }
+
   void _addWaterMeter() {
     setState(() {
       int newIndex = waterMeterData.length + 1;
@@ -50,8 +67,9 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard'),
+        title: Text(_appLocalizations.translate("appTitle")),
         actions: [
+          LanguageDropdown(onLanguageChanged: _refreshOnLanguageChange),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
@@ -65,6 +83,14 @@ class _DashboardState extends State<Dashboard> {
             },
           )
         ],
+        elevation: 2.0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(4.0),
+          child: Container(
+            height: 1.0,
+            color: Colors.black,
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -89,30 +115,37 @@ class _DashboardState extends State<Dashboard> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text("ID: ${meter['id']}"),
-                    Text("Address: ${meter['address']}"),
-                    Text("Total Today: ${meter['totalToday']} m³"),
+                    Text("${_appLocalizations.translate("waterMeterID")}: ${meter['id']}"),
+                    Text("${_appLocalizations.translate("address")}: ${meter['address']}"),
+                    Text("${_appLocalizations.translate("totalToday")}: ${meter['totalToday']} m³"),
                     Align(
                       alignment: Alignment.bottomRight,
                       child: TextButton(
                         onPressed: () async {
-
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ChartPage(
+                                waterMeterId: meter['id'],
+                              ),
+                            ),
+                          );
                         },
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 4),
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
-                              'Details',
-                              style: TextStyle(
+                              _appLocalizations.translate("details"),
+                              style: const TextStyle(
                                 color: Color(0xFF595959),
                                 fontSize: 12,
                               ),
                             ),
-                            SizedBox(width: 5),
-                            Icon(
+                            const SizedBox(width: 5),
+                            const Icon(
                               Icons.arrow_forward,
                               size: 16,
                               color: Color(0xFF595959),
